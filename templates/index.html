@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>チャットボット</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        .cool-box {
+            width: 600px;
+            height: 800px;
+            background: linear-gradient(45deg, #49a09d, #5f2c82);
+            color: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0px 10px 20px rgba(0,0,0,0.19), 0px 6px 6px rgba(0,0,0,0.23);
+        }
+    </style>
+
+</head>
+<body>
+<script src="https://riversun.github.io/chatux/chatux.min.js"></script>
+<script>
+    const chatux = new ChatUx();
+
+    //ChatUXの初期化パラメータ
+    const initParam =
+        {
+            renderMode: 'auto',
+            api: {
+                //echo chat server
+                endpoint: 'http://127.0.0.1:5001/ask',
+                method: 'GET',
+                dataType: 'jsonp',
+                escapeUserInput: false
+            },
+            bot: {
+                botPhoto: 'http://127.0.0.1:5001/icon/boticon',
+                humanPhoto: null,
+                widget: {
+                    sendLabel: '送信',
+                    placeHolder: '何か話しかけてみてください'
+                }
+            },
+            window: {
+                title: 'チャットボット',
+                infoUrl: 'https://github.com/riversun/chatux'
+            }
+        };
+    chatux.init(initParam);
+    chatux.start(true);
+
+</script>
+<div>
+    <div id="streaming_msg" class="cool-box">
+        <h1>Streaming message from GPT</h1>
+        <p>OpenAI APIで生成される情報は不正確または不適切な場合がありますが、当社の見解を述べるものではありません。</p>
+        <hr color="white">
+    </div>
+<script>
+    const messagesDiv = document.getElementById("streaming_msg");
+
+    //  LLMからのストリーミング形式の応答を /listen エンドポイントから受け取る
+    const eventSource = new EventSource("/listen");
+    eventSource.onmessage = function (event) {
+        const data = event.data;
+        messagesDiv.innerHTML += data;
+    };
+    // エラーが発生した場合の処理
+    eventSource.onerror = function(event) {
+        console.error("Connection error:", event);
+        // no automatic re-connection
+        eventSource.close();
+    };
+</script>
+</body>
+</html>
