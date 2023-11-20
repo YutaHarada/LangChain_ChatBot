@@ -1,10 +1,11 @@
 # import文
-import logging
-import os
 import sys
+import os
+import logging
+from dotenv import load_dotenv
 
 import pinecone
-from dotenv import load_dotenv
+
 from langchain.document_loaders import UnstructuredPDFLoader
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.text_splitter import CharacterTextSplitter
@@ -12,12 +13,6 @@ from langchain.vectorstores import Pinecone
 
 # 環境変数の読み込み
 load_dotenv()
-
-# ロガーの初期化
-logging.basicConfig(
-    format="%(asctime)s [%(levelname)s] %(message)s", level=logging.INFO
-)
-logger = logging.getLogger(__name__)
 
 
 # Vector storeの準備
@@ -37,6 +32,13 @@ def initialize_vectorstore():
 
 # 文書をPineconeに保存する
 if __name__ == "__main__":
+    # ロガーの初期化
+    logging.basicConfig(
+        format="%(asctime)s [%(levelname)s] %(message)s", level=logging.INFO
+    )
+    logger = logging.getLogger(__name__)
+
+    # 読み込むドキュメントのパスを取得
     file_path = sys.argv[1]
     # PDFファイルの読み込み
     loader = UnstructuredPDFLoader(file_path)

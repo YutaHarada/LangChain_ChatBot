@@ -1,10 +1,10 @@
 # import文
 import os
-from dotenv import load_dotenv
 import logging
 import queue
 import json
 import random
+from dotenv import load_dotenv
 
 from flask import (
     Flask,
@@ -141,7 +141,7 @@ def listen():
 
 if __name__ == '__main__':
 
-    # ロギングの初期化
+    # ロガーの初期化
     # フォーマットとログレベルの設定
     logging.basicConfig(
         format="%(asctime)s %(message)s", level=logging.INFO
