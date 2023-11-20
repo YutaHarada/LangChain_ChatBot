@@ -1,13 +1,11 @@
 # import文
 import os
-import logging
 import queue
 import json
 import random
-from dotenv import load_dotenv
 
 from flask import (
-    Flask,
+    Blueprint,
     request,
     render_template,
     Response,
@@ -21,18 +19,17 @@ from langchain.memory import (
     ConversationBufferMemory
 )
 
-from add_document import initialize_vectorstore
-from modules.callbacks import MyCustomCallbackHandler
-from modules.debugger import inner_log
+from apps.app import logger
+from apps.add_document import initialize_vectorstore
+from apps.chat.callbacks import MyCustomCallbackHandler
 
-# 内部処理確認の有無
-inner_log(False)
 
-# 環境変数の読み込み
-load_dotenv()
-
-# Flaskアプリの初期化
-app = Flask(__name__)
+# chatアプリの生成
+chat = Blueprint(
+    name="chat",
+    import_name=__name__,
+    template_folder="templates"
+)
 
 # ストーリミング形式の応答を順番に格納するためのキューの準備
 que = queue.Queue()
@@ -43,27 +40,27 @@ vectorstore = initialize_vectorstore()
 
 
 # ルートエンドポイント
-@app.route('/')
+@chat.route('/')
 def index():
     # ページがリロードされるたびにsession_idを更新する
     global session_id
     session_id = str(random.uniform(1, 100))
     logger.info("session_id:" + session_id)
-    return render_template('index.html')
+    return render_template('chat/index.html')
 
 
 # ボットアイコン表示用エンドポイント
-@app.route('/icon/boticon')
+@chat.route('/icon/boticon')
 def icon():
     # アイコン画像の取得
-    icon = os.path.dirname(__file__) + '/' + 'templates/boticon.png'
+    icon = os.path.dirname(__file__) + '/' + 'templates/chat/boticon.png'
     logger.info("icon:" + icon)
     # アイコンをWebサーバにダウンロード
     return send_file(icon, mimetype='image/png')
 
 
 # 回答作成用エンドポイント
-@app.route('/ask')
+@chat.route('/ask')
 def ask():
     # Redisに会話履歴を保存するための準備
     history = RedisChatMessageHistory(
@@ -122,12 +119,11 @@ def ask():
                 ]
         }) + ')'
     logger.info("res:" + res)
-
     return res
 
 
 # SSE用エンドポイント
-@app.route('/listen')
+@chat.route('/listen')
 def listen():
     def stream():
         while True:
@@ -137,13 +133,3 @@ def listen():
             yield f'data: {msg}\n\n'
     response = Response(stream(), mimetype='text/event-stream')
     return response
-
-
-if __name__ == '__main__':
-    # ロガーの初期化
-    logging.basicConfig(
-        format="%(asctime)s [%(levelname)s] %(message)s", level=logging.INFO
-    )
-    logger = logging.getLogger(__name__)
-
-    app.run(debug=True, port=5001, threaded=True)
