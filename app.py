@@ -140,13 +140,10 @@ def listen():
 
 
 if __name__ == '__main__':
-
     # ロガーの初期化
-    # フォーマットとログレベルの設定
     logging.basicConfig(
-        format="%(asctime)s %(message)s", level=logging.INFO
-        )
-    # ロガーの作成
+        format="%(asctime)s [%(levelname)s] %(message)s", level=logging.INFO
+    )
     logger = logging.getLogger(__name__)
 
     app.run(debug=True, port=5001, threaded=True)
