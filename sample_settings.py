@@ -17,14 +17,18 @@ raw_env = [
     'OPENAI_API_KEY=...',
     'OPENAI_API_MODEL=...',
     'OPENAI_API_TEMPERATURE=...',
+
     'PINECONE_API_KEY=...',
     'PINECONE_INDEX=...',
-    'PINECONE_ENV=...'
+    'PINECONE_ENV=...',
+
+    'COSMOS_ENDPOINT=...',
+    'COSMOS_CREDENTIAL=...'
 ]
 
 # Server Socket
 # ========================================
-bind = '127.0.0.1:5000'
+bind = '0.0.0.0:5000'
 
 # Worker Processes
 # ========================================

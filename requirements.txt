@@ -4,6 +4,8 @@ annotated-types==0.6.0
 anyio==3.7.1
 async-timeout==4.0.3
 attrs==23.1.0
+azure-core==1.29.5
+azure-cosmos==4.5.1
 backoff==2.2.1
 beautifulsoup4==4.12.2
 bidict==0.22.1

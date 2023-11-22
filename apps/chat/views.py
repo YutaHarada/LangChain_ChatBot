@@ -15,7 +15,7 @@ from flask import (
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import (
-    RedisChatMessageHistory,
+    CosmosDBChatMessageHistory,
     ConversationBufferMemory
 )
 
@@ -62,12 +62,16 @@ def icon():
 # 回答作成用エンドポイント
 @chat.route('/ask')
 def ask():
-    # Redisに会話履歴を保存するための準備
-    history = RedisChatMessageHistory(
-        url="redis://localhost:6379/0",
-        ttl=600,
-        session_id=session_id
+
+    history = CosmosDBChatMessageHistory(
+        cosmos_endpoint=os.environ["COSMOS_ENDPOINT"],
+        cosmos_database="langchain-chatbot",
+        cosmos_container="history",
+        credential=os.environ["COSMOS_CREDENTIAL"],
+        session_id=session_id,
+        user_id="user"
     )
+    history.prepare_cosmos()
 
     # 最初の質問内容を保存するためのメモリ
     memory = ConversationBufferMemory(
