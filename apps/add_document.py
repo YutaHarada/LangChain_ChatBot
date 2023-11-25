@@ -4,12 +4,11 @@ import os
 import logging
 from dotenv import load_dotenv
 
-import pinecone
-
 from langchain.document_loaders import UnstructuredPDFLoader
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.text_splitter import CharacterTextSplitter
-from langchain.vectorstores import Pinecone
+from langchain.vectorstores.azure_cosmos_db import AzureCosmosDBVectorSearch
+
 
 # 環境変数の読み込み
 load_dotenv()
@@ -17,17 +16,21 @@ load_dotenv()
 
 # Vector storeの準備
 def initialize_vectorstore():
-    # pineconeの初期化
-    pinecone.init(
-        api_key=os.environ["PINECONE_API_KEY"],
-        environment=os.environ["PINECONE_ENV"]
-    )
-
     # index名の設定
-    index_name = os.environ["PINECONE_INDEX"]
+    index_name = os.environ["INDEX_NAME"]
+
     # 埋め込み処理の初期化
     embeddings = OpenAIEmbeddings()
-    return Pinecone.from_existing_index(index_name, embeddings)
+
+    # CosmosDBの初期化
+    vectorstore = AzureCosmosDBVectorSearch.from_connection_string(
+        connection_string=os.environ["CONNECTION_STRING"],
+        namespace=os.environ["NAMESPACE"],
+        embedding=embeddings,
+        index_name=index_name
+    )
+
+    return vectorstore
 
 
 # 文書をPineconeに保存する
@@ -53,4 +56,4 @@ if __name__ == "__main__":
     # Vector storeの初期化
     vectorstore = initialize_vectorstore()
     # ベクトル化した文書の追加
-    vectorstore.add_documents(docs)
+    vectorstore.add_texts(docs)
