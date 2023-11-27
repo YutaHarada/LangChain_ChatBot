@@ -18,10 +18,6 @@ raw_env = [
     'OPENAI_API_MODEL=...',
     'OPENAI_API_TEMPERATURE=...',
 
-    'VECTOR_STORE_ADDRESS=...',
-    'VECTOR_STORE_PASSWORD=...'
-    'INDEX_NAME=...'
-
     'COSMOS_ENDPOINT=...',
     'COSMOS_CREDENTIAL=...'
 ]
