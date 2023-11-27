@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from langchain.document_loaders import UnstructuredPDFLoader
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.text_splitter import CharacterTextSplitter
-from langchain.vectorstores.azure_cosmos_db import AzureCosmosDBVectorSearch
+from langchain.vectorstores.azuresearch import AzureSearch
 
 
 # 環境変数の読み込み
@@ -16,18 +16,21 @@ load_dotenv()
 
 # Vector storeの準備
 def initialize_vectorstore():
-    # index名の設定
+    # AzureSearchの接続情報の取得
+    azure_search_endpoint = os.environ["VECTOR_STORE_ADDRESS"]
+    azure_search_key = os.environ["VECTOR_STORE_PASSWORD"]
+    # index名の取得
     index_name = os.environ["INDEX_NAME"]
 
     # 埋め込み処理の初期化
     embeddings = OpenAIEmbeddings()
 
     # CosmosDBの初期化
-    vectorstore = AzureCosmosDBVectorSearch.from_connection_string(
-        connection_string=os.environ["CONNECTION_STRING"],
-        namespace=os.environ["NAMESPACE"],
-        embedding=embeddings,
-        index_name=index_name
+    vectorstore = AzureSearch(
+        azure_search_endpoint=azure_search_endpoint,
+        azure_search_key=azure_search_key,
+        index_name=index_name,
+        embedding_function=embeddings,
     )
 
     return vectorstore
@@ -56,4 +59,4 @@ if __name__ == "__main__":
     # Vector storeの初期化
     vectorstore = initialize_vectorstore()
     # ベクトル化した文書の追加
-    vectorstore.add_texts(docs)
+    vectorstore.add_documents(documents=docs)
