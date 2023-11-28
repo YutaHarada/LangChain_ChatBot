@@ -30,7 +30,7 @@ def initialize_vectorstore():
         azure_search_endpoint=azure_search_endpoint,
         azure_search_key=azure_search_key,
         index_name=index_name,
-        embedding_function=embeddings,
+        embedding_function=embeddings.embed_query,
     )
 
     return vectorstore
