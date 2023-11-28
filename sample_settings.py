@@ -18,10 +18,6 @@ raw_env = [
     'OPENAI_API_MODEL=...',
     'OPENAI_API_TEMPERATURE=...',
 
-    'PINECONE_API_KEY=...',
-    'PINECONE_INDEX=...',
-    'PINECONE_ENV=...',
-
     'COSMOS_ENDPOINT=...',
     'COSMOS_CREDENTIAL=...'
 ]
